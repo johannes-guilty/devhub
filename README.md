@@ -1,67 +1,104 @@
-# Payload Blank Template
+# DevHub
 
-This template comes configured with the bare minimum to get started on anything you need.
+En utvikler-community plattform for deling av kode-snippets, tekniske artikler og samarbeid.
 
-## Quick start
+> **Læringsprosjekt:** Dette prosjektet er bygget for å mestre moderne fullstack-utvikling med Payload CMS, Next.js, PostgreSQL, og relaterte teknologier.
 
-This template can be deployed directly from our Cloud hosting and it will setup MongoDB and cloud S3 object storage for media.
+## Tech Stack
 
-## Quick Start - local setup
+| Teknologi | Versjon | Formål |
+|-----------|---------|--------|
+| [Next.js](https://nextjs.org/) | 15.x | App Router, Server Components |
+| [Payload CMS](https://payloadcms.com/) | 3.x | Headless CMS, Admin Panel |
+| [TypeScript](https://www.typescriptlang.org/) | 5.x | Type-sikkerhet (strict mode) |
+| [PostgreSQL](https://www.postgresql.org/) | 15+ | Database (via Neon) |
+| [pnpm](https://pnpm.io/) | 9+ | Package manager |
+| [Tailwind CSS](https://tailwindcss.com/) | 3.x | Styling |
 
-To spin up this template locally, follow these steps:
+## Prerequisites
 
-### Clone
+- **Node.js** 18.20.2+ eller 20.9.0+
+- **pnpm** 9+ eller 10+
+- **PostgreSQL** database (lokal eller cloud, f.eks. [Neon](https://neon.tech))
 
-After you click the `Deploy` button above, you'll want to have standalone copy of this repo on your machine. If you've already cloned this repo, skip to [Development](#development).
+## Kom i gang
 
-### Development
+### 1. Clone repository
 
-1. First [clone the repo](#clone) if you have not done so already
-2. `cd my-project && cp .env.example .env` to copy the example environment variables. You'll need to add the `MONGODB_URL` from your Cloud project to your `.env` if you want to use S3 storage and the MongoDB database that was created for you.
+```bash
+git clone git@github.com:johannes-guilty/devhub.git
+cd devhub
+```
 
-3. `pnpm install && pnpm dev` to install dependencies and start the dev server
-4. open `http://localhost:3000` to open the app in your browser
+### 2. Installer dependencies
 
-That's it! Changes made in `./src` will be reflected in your app. Follow the on-screen instructions to login and create your first admin user. Then check out [Production](#production) once you're ready to build and serve your app, and [Deployment](#deployment) when you're ready to go live.
+```bash
+pnpm install
+```
 
-#### Docker (Optional)
+### 3. Konfigurer environment variables
 
-If you prefer to use Docker for local development instead of a local MongoDB instance, the provided docker-compose.yml file can be used.
+```bash
+cp .env.example .env
+```
 
-To do so, follow these steps:
+Rediger `.env` og legg til:
+- `DATABASE_URL` - PostgreSQL connection string
+- `PAYLOAD_SECRET` - Minst 32 tegn lang hemmelig nøkkel
 
-- Modify the `MONGODB_URL` in your `.env` file to `mongodb://127.0.0.1/<dbname>`
-- Modify the `docker-compose.yml` file's `MONGODB_URL` to match the above `<dbname>`
-- Run `docker-compose up` to start the database, optionally pass `-d` to run in the background.
+### 4. Start utviklingsserver
 
-## How it works
+```bash
+pnpm dev
+```
 
-The Payload config is tailored specifically to the needs of most websites. It is pre-configured in the following ways:
+Åpne [http://localhost:3000](http://localhost:3000) i nettleseren.
 
-### Collections
+## Tilgjengelige Scripts
 
-See the [Collections](https://payloadcms.com/docs/configuration/collections) docs for details on how to extend this functionality.
+| Script | Beskrivelse |
+|--------|-------------|
+| `pnpm dev` | Start utviklingsserver |
+| `pnpm build` | Bygg for produksjon |
+| `pnpm start` | Kjør produksjonsbygg |
+| `pnpm lint` | Sjekk for lint-feil |
+| `pnpm lint:fix` | Auto-fiks lint-feil |
+| `pnpm format` | Formater kode med Prettier |
+| `pnpm type-check` | Kjør TypeScript sjekk |
 
-- #### Users (Authentication)
+## Prosjektstruktur
 
-  Users are auth-enabled collections that have access to the admin panel.
+```
+devhub/
+├── src/
+│   ├── app/                  # Next.js App Router
+│   │   ├── (frontend)/       # Offentlig frontend
+│   │   ├── (payload)/        # Payload admin & API
+│   │   └── api/health/       # Health check endpoint
+│   ├── collections/          # Payload collections
+│   ├── components/           # React components
+│   └── lib/                  # Shared utilities
+├── docs/                     # Prosjektdokumentasjon
+│   ├── architecture.md       # Arkitekturbeslutninger
+│   ├── prd.md               # Product Requirements
+│   └── stories/             # User stories
+└── prisma/                   # Database schema (kommer)
+```
 
-  For additional help, see the official [Auth Example](https://github.com/payloadcms/payload/tree/main/examples/auth) or the [Authentication](https://payloadcms.com/docs/authentication/overview#authentication-overview) docs.
+## API Endpoints
 
-- #### Media
+| Endpoint | Beskrivelse |
+|----------|-------------|
+| `GET /api/health` | Health check - returnerer `{ status: "ok" }` |
+| `GET /admin` | Payload CMS admin panel |
+| `POST /api/graphql` | GraphQL endpoint |
 
-  This is the uploads enabled collection. It features pre-configured sizes, focal point and manual resizing to help you manage your pictures.
+## Dokumentasjon
 
-### Docker
+- [Arkitektur](./docs/architecture.md) - Tekniske beslutninger og design
+- [PRD](./docs/prd.md) - Product Requirements Document
+- [Stories](./docs/stories/) - User stories og tasks
 
-Alternatively, you can use [Docker](https://www.docker.com) to spin up this template locally. To do so, follow these steps:
+## Lisens
 
-1. Follow [steps 1 and 2 from above](#development), the docker-compose file will automatically use the `.env` file in your project root
-1. Next run `docker-compose up`
-1. Follow [steps 4 and 5 from above](#development) to login and create your first admin user
-
-That's it! The Docker instance will help you get up and running quickly while also standardizing the development environment across your teams.
-
-## Questions
-
-If you have any issues or questions, reach out to us on [Discord](https://discord.com/invite/payload) or start a [GitHub discussion](https://github.com/payloadcms/payload/discussions).
+MIT
