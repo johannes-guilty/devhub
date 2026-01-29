@@ -28,6 +28,10 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
     },
+    // Use separate PostgreSQL schema to isolate Payload tables from Prisma tables
+    // This enables the dual-ORM strategy where Payload and Prisma coexist
+    // NOTE: Schema must be created manually first: CREATE SCHEMA IF NOT EXISTS payload;
+    schemaName: 'payload',
   }),
   sharp,
   plugins: [],

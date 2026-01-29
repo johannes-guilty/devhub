@@ -7,17 +7,17 @@
  * @module lib/utils
  */
 
-/**
- * Combines class names conditionally.
- * Useful for dynamic Tailwind CSS classes.
- *
- * @example
- * cn('base-class', isActive && 'active-class', 'always-applied')
- * // Returns: 'base-class active-class always-applied' (if isActive is true)
- *
- * @param classes - Class names or falsy values to filter out
- * @returns Combined class string
- */
-export function cn(...classes: (string | boolean | undefined | null)[]): string {
-  return classes.filter(Boolean).join(' ');
-}
+// Re-export auth utilities
+export {
+  AuthError,
+  getCurrentUser,
+  requireUser,
+  requireRole,
+  canEdit,
+  canEditOrModerate,
+  isAdmin,
+  isModerator,
+} from './auth';
+
+// Re-export cn utility for convenience
+export { cn } from './cn';

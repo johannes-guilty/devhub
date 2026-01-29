@@ -1,5 +1,9 @@
 # DevHub
 
+[![Deploy with Vercel](https://vercel.com/button)](https://devhub-virid.vercel.app)
+
+**Live:** [devhub-virid.vercel.app](https://devhub-virid.vercel.app)
+
 En utvikler-community plattform for deling av kode-snippets, tekniske artikler og samarbeid.
 
 > **Læringsprosjekt:** Dette prosjektet er bygget for å mestre moderne fullstack-utvikling med Payload CMS, Next.js, PostgreSQL, og relaterte teknologier.
@@ -66,6 +70,56 @@ pnpm dev
 | `pnpm format` | Formater kode med Prettier |
 | `pnpm type-check` | Kjør TypeScript sjekk |
 
+### Database Scripts (Prisma)
+
+| Script | Beskrivelse |
+|--------|-------------|
+| `pnpm db:generate` | Generer Prisma Client |
+| `pnpm db:migrate` | Kjør database migrations |
+| `pnpm db:push` | Push schema til database (uten migration) |
+| `pnpm db:studio` | Åpne Prisma Studio (visuell database editor) |
+| `pnpm db:seed` | Seed database med testdata |
+
+### Payload CMS Scripts
+
+| Script | Beskrivelse |
+|--------|-------------|
+| `pnpm generate:types` | Generer TypeScript typer fra Payload collections |
+| `pnpm generate:importmap` | Generer import map for custom components |
+
+## Dual-ORM Arkitektur
+
+DevHub bruker en **dual-ORM strategi** hvor Payload CMS og Prisma opererer på samme PostgreSQL database, men håndterer forskjellige domener:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    PostgreSQL Database                          │
+├────────────────────────────┬────────────────────────────────────┤
+│     PAYLOAD TABLES         │         PRISMA TABLES              │
+│     (CMS-innhold)          │         (App-data)                 │
+├────────────────────────────┼────────────────────────────────────┤
+│  • users (CMS admins)      │  • User (App-brukere via Clerk)    │
+│  • media (bildeopplasting) │  • Snippet (kode-snippets)         │
+│  • pages (CMS-sider)       │  • Tag, Discussion, etc.           │
+│  • payload_* (system)      │                                    │
+└────────────────────────────┴────────────────────────────────────┘
+```
+
+### Når bruke hvilken?
+
+| Bruksområde | ORM | Eksempel |
+|-------------|-----|----------|
+| **CMS-innhold** | Payload | Sider, media, admin-brukere |
+| **App-data** | Prisma | Snippets, brukerprofiler, diskusjoner |
+| **Admin panel** | Payload | Innholdsredigering på `/admin` |
+| **Server Actions** | Prisma | CRUD-operasjoner for app-features |
+
+### Viktige forskjeller
+
+- **Payload `users`**: CMS-administratorer som logger inn på `/admin`
+- **Prisma `User`**: App-brukere som logger inn via Clerk (autentisering)
+- Disse er **separate tabeller** som IKKE synkroniseres runtime
+
 ## Prosjektstruktur
 
 ```
@@ -75,23 +129,44 @@ devhub/
 │   │   ├── (frontend)/       # Offentlig frontend
 │   │   ├── (payload)/        # Payload admin & API
 │   │   └── api/health/       # Health check endpoint
-│   ├── collections/          # Payload collections
+│   ├── collections/          # Payload collections (CMS)
+│   │   ├── Users.ts          # CMS admin-brukere
+│   │   └── Media.ts          # Bildeopplastinger
 │   ├── components/           # React components
-│   └── lib/                  # Shared utilities
+│   └── lib/
+│       ├── db/               # Prisma Client singleton
+│       └── utils/            # Shared utilities
+├── prisma/
+│   ├── schema.prisma         # Prisma database schema (App-data)
+│   ├── migrations/           # Database migrations
+│   └── seed.ts               # Database seed script
+├── media/                    # Upload-mappe for Payload media (gitignored)
 ├── docs/                     # Prosjektdokumentasjon
 │   ├── architecture.md       # Arkitekturbeslutninger
 │   ├── prd.md               # Product Requirements
 │   └── stories/             # User stories
-└── prisma/                   # Database schema (kommer)
+└── prisma.config.ts          # Prisma 7 configuration
 ```
 
 ## API Endpoints
 
+### App Endpoints
+
 | Endpoint | Beskrivelse |
 |----------|-------------|
 | `GET /api/health` | Health check - returnerer `{ status: "ok" }` |
+
+### Payload CMS Endpoints
+
+| Endpoint | Beskrivelse |
+|----------|-------------|
 | `GET /admin` | Payload CMS admin panel |
-| `POST /api/graphql` | GraphQL endpoint |
+| `GET/POST /api/users` | CRUD for CMS-brukere (krever auth) |
+| `GET/POST /api/media` | CRUD for media/bilder |
+| `POST /api/graphql` | GraphQL API |
+| `GET /api/graphql-playground` | GraphQL IDE (kun development) |
+
+> **Merk:** Payload API er for CMS-data. App-data (snippets, etc.) håndteres via Server Actions med Prisma.
 
 ## Dokumentasjon
 

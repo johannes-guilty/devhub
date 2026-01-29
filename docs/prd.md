@@ -350,6 +350,9 @@ Pragmatisk testing for læring:
 7. Endringer i CMS reflekteres på frontend uten redeploy
 8. Blokk-komponenter bruker shadcn/ui for konsistent design
 
+**Content Workflow Note:**
+> Innholdsdesign (tekst, struktur, tone, bilder) leveres av UX Expert som en **Content Brief** før eller parallelt med teknisk implementering. Utvikler fokuserer kun på blokk-funksjonalitet - faktisk innhold fylles inn via Payload Admin basert på Content Brief. Se "UX Expert Deliverables" i Next Steps for detaljer.
+
 ---
 
 ## Epic 2: Snippets Feature
@@ -836,6 +839,44 @@ Jeg trenger hjelp med:
 3. Eventuelt lage wireframes eller flow-diagrammer for kritiske paths
 
 Dette er et læringsprosjekt - fokus på forståelse fremfor hastighet.
+```
+
+### UX Expert Deliverables: Landing Page Content Brief
+
+**Når:** Kan leveres parallelt med Epic 1 utvikling, men må være klar før Story 1.6 fullføres.
+
+**Hva UX Expert skal levere:**
+
+```
+@ux-expert
+
+Jeg trenger en Content Brief for DevHub landing page (Story 1.6).
+
+Landing page bruker pagebuilder-arkitektur med modulære blokker som 
+administreres via Payload CMS. Utvikler bygger blokkene teknisk - 
+du designer innholdet.
+
+Lever gjerne som markdown-dokument (docs/content/landing-page-brief.md) med:
+
+1. **Blokk-struktur og rekkefølge**
+   - Hvilke blokker trengs (Hero, Features, Social Proof, CTA, etc.)
+   - Rekkefølge fra topp til bunn
+
+2. **Innhold per blokk**
+   - Headlines (H1, H2)
+   - Body text / beskrivelser
+   - CTA-tekst på knapper
+   - Alt-tekst for bilder
+
+3. **Bilde-behov**
+   - Beskrivelse av bilder/illustrasjoner som trengs
+   - Placeholder-forslag eller kilder
+
+4. **Tone of Voice**
+   - Stil og tone for DevHub (profesjonell men vennlig, teknisk men tilgjengelig)
+
+Målgruppe: Utviklere som vil dele kode, diskutere, og løse challenges.
+Mørkt tema som default. Se PRD for mer kontekst.
 ```
 
 ### Architect Prompt

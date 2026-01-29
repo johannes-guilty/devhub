@@ -1,0 +1,80 @@
+// prisma/schema.prisma
+// Database schema for DevHub app-specific data
+// Note: Payload CMS uses same database but manages its own tables via Drizzle
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  // Note: URL configuration moved to prisma.config.ts for Prisma 7
+  // Migrate uses DATABASE_URL_UNPOOLED (direct connection)
+  // Runtime uses DATABASE_URL (pooled connection via adapter)
+}
+
+// =============================================================================
+// ENUMS
+// =============================================================================
+
+/// User roles for access control
+/// GUEST: Non-authenticated (rarely stored in DB)
+/// MEMBER: Standard authenticated user
+/// MODERATOR: Can moderate content
+/// ADMIN: Full platform access
+enum Role {
+  GUEST
+  MEMBER
+  MODERATOR
+  ADMIN
+}
+
+// =============================================================================
+// MODELS
+// =============================================================================
+
+/// User model - synced from Clerk authentication (Story 1.4 implements sync)
+/// Primary key is Clerk user ID (NOT auto-generated) to maintain 1:1 mapping
+model User {
+  // Primary key: Clerk user ID - enables direct lookup without joins
+  // Format: "user_xxxxxxxxxxxxx" (Clerk's ID format)
+  id          String   @id
+
+  // Core identity fields - synced from Clerk
+  email       String   @unique
+  username    String   @unique  // URL-safe, used in /users/[username] routes
+  displayName String             // Human-readable name for UI
+
+  // Optional profile fields
+  avatarUrl   String?            // Profile image URL from Clerk
+  bio         String?            // User-written biography
+
+  // Authorization & gamification
+  role        Role     @default(MEMBER)
+  points      Int      @default(0)  // Aggregated score for leaderboard
+
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // ==========================================================================
+  // Indexes for query performance
+  // ==========================================================================
+  
+  // Leaderboard: ORDER BY points DESC
+  @@index([points(sort: Desc)])
+  
+  // Recent users: ORDER BY createdAt DESC
+  @@index([createdAt(sort: Desc)])
+
+  // ==========================================================================
+  // Relations (added in later stories)
+  // ==========================================================================
+  // snippets     Snippet[]      // Story 2.1
+  // discussions  Discussion[]   // Story 3.1
+  // comments     Comment[]      // Story 3.1
+  // likes        Like[]         // Story 2.3
+  // bookmarks    Bookmark[]     // Story 2.3
+  // submissions  Submission[]   // Story 4.1
+  // badges       UserBadge[]    // Story 5.1
+}
